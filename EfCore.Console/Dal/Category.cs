@@ -1,0 +1,10 @@
+﻿namespace EfCore.Console.Dal
+{
+    public class Category
+    {
+        public int Id { get; set; }
+        public String Name { get; set; }
+
+        public virtual List<Product> Products { get; set; } = new List<Product>();
+    }
+}
