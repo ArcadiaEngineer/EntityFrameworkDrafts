@@ -37,6 +37,12 @@ namespace EfCore.Console.Dal
             var path = Initiliazer.Configuration.GetConnectionString("SqlServer");
             optionsBuilder.UseSqlServer(path);
             optionsBuilder.LogTo(C.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+
+            #region LazyLoading
+            /*optionsBuilder.UseLazyLoadingProxies(); Microsoft.EntityFramework.Proxies libraries
+                We mark navigation properties with virtual keyword, and we can obtain entites' properties with lazy loading
+                Each time we use the nav. prop. EfCore fetch from database*/ 
+            #endregion
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -45,6 +51,19 @@ namespace EfCore.Console.Dal
             //modelBuilder.Entity<Person>().ToTable("People");
             //modelBuilder.Entity<Student>().ToTable("Students");
             //modelBuilder.Entity<Teacher>().ToTable("Teachers");
+            #endregion
+
+            #region Owned Type Entity Configuration
+            modelBuilder.Entity<Student>().OwnsOne(s => s.PhysicalPersonFeatures, ppf =>
+                {
+                    ppf.Property(p => p.Weight).HasColumnName("Weight");
+                    ppf.Property(p => p.Height).HasColumnName("Height");
+                });
+            modelBuilder.Entity<Teacher>().OwnsOne(s => s.PhysicalPersonFeatures, ppf =>
+            {
+                ppf.Property(p => p.Weight).HasColumnName("Weight");
+                ppf.Property(p => p.Height).HasColumnName("Height");
+            }); 
             #endregion
 
             base.OnModelCreating(modelBuilder);

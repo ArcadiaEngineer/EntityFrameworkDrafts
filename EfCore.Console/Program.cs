@@ -1,13 +1,25 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
-using Microsoft.Extensions.Configuration;
 using EfCore.Console.Dal;
-using EfCore.Console;
-
-var path = Initiliazer.Configuration.GetConnectionString("SqlServer");
+using Microsoft.EntityFrameworkCore;
 
 using (var context = new AppDbContext())
+{
+    //AddEntity(context);
+
+
+    //FindEntitiesWithChangeTracker(context);
+
+    EagerLoading(context);
+    ExplicitLoading(context);
+
+}
+
+
+Console.WriteLine("Hello, World!");
+
+static void AddEntity(AppDbContext context)
 {
     context.Add<Teacher>(new Teacher { Name = "Ali", Phone = "123456789", Age = 32 });
     context.Add<Teacher>(new Teacher { Name = "Veli", Phone = "9874456321", Age = 42 });
@@ -15,10 +27,11 @@ using (var context = new AppDbContext())
     context.Add<Student>(new Student { Name = "Veli", StudentNumber = "9874456321", Age = 42 });
     context.Add<Student>(new Student { Name = "Veli", StudentNumber = "9874456321", Age = 42 });
 
-    //context.People.ToList();
-
     context.SaveChanges();
+}
 
+static void FindEntitiesWithChangeTracker(AppDbContext context)
+{
     context.ChangeTracker.Entries().ToList().ForEach(entry =>
     {
         switch (entry.Entity)
@@ -34,11 +47,15 @@ using (var context = new AppDbContext())
                 break;
         }
     });
-    
-
-    
-
 }
 
+static void EagerLoading(AppDbContext context)
+{
+    var result = context.Products.Include(p => p.ProductFeature).ThenInclude(pf => pf.Product).Include(p => p.Category).FirstOrDefault();
+}
 
-Console.WriteLine("Hello, World!");
+static void ExplicitLoading(AppDbContext context)
+{
+    var result = context.Categories.FirstOrDefault();
+    context.Entry(result!).Collection(c => c.Products).Load();
+}
