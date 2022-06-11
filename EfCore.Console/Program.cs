@@ -8,11 +8,15 @@ using (var context = new AppDbContext())
 {
     //AddEntity(context);
 
-
     //FindEntitiesWithChangeTracker(context);
+    //EagerLoading(context);
+    //ExplicitLoading(context);
+    //AddProduct(context);
+    //KeylessTables(context);
 
-    EagerLoading(context);
-    ExplicitLoading(context);
+
+
+    Console.WriteLine("Hello World");
 
 }
 
@@ -58,4 +62,20 @@ static void ExplicitLoading(AppDbContext context)
 {
     var result = context.Categories.FirstOrDefault();
     context.Entry(result!).Collection(c => c.Products).Load();
+}
+
+static void AddProduct(AppDbContext context)
+{
+    context.Add<Product>(new Product { Name = "Kalem", Barcode = 122342, CategoryId = 1, DiscountPrice = 14, IsDeleted = false, Price = 234, Stock = 123 });
+    context.Add<Product>(new Product { Name = "Kalem2", Barcode = 122124342, CategoryId = 1, DiscountPrice = 42, IsDeleted = false, Price = 2123, Stock = 1523 });
+    context.Categories.Add(new Category { Name = "Kalemler" });
+
+    context.SaveChanges();
+}
+
+static void KeylessTables(AppDbContext context)
+{
+    var result = context.FullProducts.FromSqlRaw(@"select p.Name , p.Price, p.Stock, p.DiscountPrice, c.Name as CategoryName from Products p
+inner join Categories c
+on p.CategoryId = c.Id").ToList();
 }
