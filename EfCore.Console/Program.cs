@@ -3,18 +3,22 @@
 
 using EfCore.Console.Dal;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 using (var context = new AppDbContext())
 {
     //AddEntity(context);
+    //AddProduct(context);
 
     //FindEntitiesWithChangeTracker(context);
+
     //EagerLoading(context);
     //ExplicitLoading(context);
-    //AddProduct(context);
+
     //KeylessTables(context);
 
-
+    //InnerJoingWithMethod(context);
+    //InnerJoinWithLINQ(context);
 
     Console.WriteLine("Hello World");
 
@@ -78,4 +82,25 @@ static void KeylessTables(AppDbContext context)
     var result = context.FullProducts.FromSqlRaw(@"select p.Name , p.Price, p.Stock, p.DiscountPrice, c.Name as CategoryName from Products p
 inner join Categories c
 on p.CategoryId = c.Id").ToList();
+}
+
+static void InnerJoingWithMethod(AppDbContext context)
+{
+    var result = context.Categories.Join(context.Products, c => c.Id, p => p.CategoryId, (c, p) => new { c, p });
+    var result2 = context.Categories.Join(context.Products, c => c.Id, p => p.CategoryId, (c, p) => new { c, p }).Join(context.ProductFeatures, a => a.p.Id, pf => pf.Id, (a, pf) => new { a, pf });
+}
+
+static void InnerJoinWithLINQ(AppDbContext context)
+{
+    var result = (from c in context.Categories
+                  join p in context.Products on
+                  c.Id equals p.CategoryId
+                  select new { c, p }).ToList();
+
+    var result2 = (from c in context.Categories
+                   join p in context.Products on
+                   c.Id equals p.CategoryId
+                   join pf in context.ProductFeatures on
+                   p.Id equals pf.Id
+                   select new { c, p, pf }).ToList();
 }

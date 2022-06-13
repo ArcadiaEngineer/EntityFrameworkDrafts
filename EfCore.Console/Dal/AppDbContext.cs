@@ -88,6 +88,10 @@ namespace EfCore.Console.Dal
             modelBuilder.Entity<Product>().HasIndex(p => p.Price).IncludeProperties(p => p.DiscountPrice);//Multiple Column
             #endregion
 
+            #region Constraint
+            modelBuilder.Entity<Product>().HasCheckConstraint("PriceCheckDefault", "[Price] > [Price] - [Price] * [DiscountPrice] / 100");
+            #endregion
+
             base.OnModelCreating(modelBuilder);
         }
     }
