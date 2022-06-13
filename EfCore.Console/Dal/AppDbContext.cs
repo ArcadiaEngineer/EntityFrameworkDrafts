@@ -82,6 +82,12 @@ namespace EfCore.Console.Dal
             modelBuilder.Entity<Product>().Ignore(p => p.DiscountPrice);
             #endregion
 
+            #region Indexing
+            modelBuilder.Entity<Product>().HasIndex(p => p.Price);//Only One
+            modelBuilder.Entity<Product>().HasIndex(p => new { p.Price , p.Name});//Composite
+            modelBuilder.Entity<Product>().HasIndex(p => p.Price).IncludeProperties(p => p.DiscountPrice);//Multiple Column
+            #endregion
+
             base.OnModelCreating(modelBuilder);
         }
     }
