@@ -20,6 +20,10 @@ using (var context = new AppDbContext())
     //InnerJoingWithMethod(context);
     //InnerJoinWithLINQ(context);
 
+    //LeftRightJoins(context);
+
+    //OuterJoin(context);
+
     Console.WriteLine("Hello World");
 
 }
@@ -103,4 +107,44 @@ static void InnerJoinWithLINQ(AppDbContext context)
                    join pf in context.ProductFeatures on
                    p.Id equals pf.Id
                    select new { c, p, pf }).ToList();
+}
+
+static void LeftRightJoins(AppDbContext context)
+{
+    var result = (from p in context.Products
+                  join pf in context.ProductFeatures on
+                  p.Id equals pf.Id into pfList
+                  from pf in pfList.DefaultIfEmpty()
+                  select new
+                  {
+                      ProductName = p.Name,
+                      ProductPrice = p.Price,
+                      ProductWidth = pf.Width,
+                  }).ToList();
+}
+
+static void OuterJoin(AppDbContext context)
+{
+    var left = from p in context.Products
+               join pf in context.ProductFeatures
+               on p.Id equals pf.Id into pfList
+               from pf in pfList.DefaultIfEmpty()
+               select new
+               {
+                   ProductName = p.Name,
+                   ProductPrice = p.Price,
+                   ProductWidth = pf.Width,
+               };
+    var right = from pf in context.ProductFeatures
+                join p in context.Products
+                on pf.Id equals p.Id into pList
+                from p in pList.DefaultIfEmpty()
+                select new
+                {
+                    ProductName = p.Name,
+                    ProductPrice = p.Price,
+                    ProductWidth = pf.Width,
+                };
+
+    var outer = left.Union(right).ToList();
 }
