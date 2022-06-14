@@ -35,8 +35,11 @@ using (var context = new AppDbContext())
 
     //StoreProcedureBasick(context);
     //StoreProcedureWithParameters(context);
-
     //CustomStoreProcedureResult(context);
+
+    //FunctionsWithParameters(context);
+    //FunctionWithCsFunctionInDbContext(context);
+    //RawSqlForFunctionReturnsScalarValue(context);
 
     Console.WriteLine("Hello World");
 
@@ -221,4 +224,21 @@ static void CustomStoreProcedureResult(AppDbContext context)
         IsDeleted = false
     };
     context.Database.ExecuteSqlInterpolated($"Exec sp_insert_product {product.Name},{product.Price},{product.DiscountPrice},{product.Stock},{product.Barcode},{product.CategoryId},{product.IsDeleted},{sqlParamater}  output");
+}
+
+static void FunctionsWithParameters(AppDbContext context)
+{
+    var category = 1;
+    var fullProducts = context.Products.FromSqlInterpolated($"SELECT * FROM getFullProductsWithParameter({category})");
+}
+
+static void FunctionWithCsFunctionInDbContext(AppDbContext context)
+{
+    var fullProducts = context.FullProducts.ToArray();
+}
+
+static void RawSqlForFunctionReturnsScalarValue(AppDbContext context)
+{
+    int categoryId = 5;
+    var productCount = context.ProductCount.FromSqlInterpolated($"SELECT dbo.getProductCount({categoryId}) as Count").ToList();
 }

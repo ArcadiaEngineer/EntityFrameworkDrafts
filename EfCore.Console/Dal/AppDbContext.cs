@@ -41,6 +41,8 @@ namespace EfCore.Console.Dal
          */
         #endregion
 
+        public DbSet<ProductCount> ProductCount { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             var path = Initiliazer.Configuration.GetConnectionString("SqlServer");
@@ -54,7 +56,11 @@ namespace EfCore.Console.Dal
                 Each time we use the nav. prop. EfCore fetch from database*/
             #endregion
         }
-
+        public IQueryable<FullProduct> GetFullProducts(int categoryId) => FromExpression(() => GetFullProducts(categoryId));
+        public int GetProductCount(int categoryID)
+        {
+            throw new NotSupportedException();//this method runs only when Ef core call it, we can not use it explicitly
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             #region Table Per Type Configuration
@@ -112,6 +118,22 @@ namespace EfCore.Console.Dal
             //it is added all product queries
             #endregion
 
+            #region ToFunction
+            modelBuilder.Entity<FullProduct>().ToFunction("getFullProducts");//For function without parameters and returning Table
+            #endregion
+
+            #region FunctionWithMethod
+            modelBuilder.HasDbFunction(typeof(AppDbContext).GetMethod(nameof(GetFullProducts), new[] { typeof(int) })!).HasName("getFullProductsWithParameter");
+            #endregion
+
+            #region FunctionReturnsScalerValueWithMethod
+            modelBuilder.HasDbFunction(typeof(AppContext).GetMethod(nameof(GetProductCount), new[] { typeof(int) })!).HasName("getProductCount");
+            #endregion
+
+            #region ExplicitlyCallFunctionsReturnsScalarValue
+            modelBuilder.Entity<ProductCount>().HasNoKey();
+            #endregion
+
             base.OnModelCreating(modelBuilder);
         }
     }
@@ -120,4 +142,5 @@ namespace EfCore.Console.Dal
  * EfCore doesnt track entities which has no key
  * EfCore doesnt track entities which has no key but we can read them
  * When we create db set but we use it for join results or custom queries, we need to delete their tables in migration
+ * We can use LINQ with functions, while we dont be able to use LINQ with store procedures
  */
