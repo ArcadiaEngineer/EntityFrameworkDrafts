@@ -7,5 +7,7 @@
         public decimal DiscountPrice { get; set; }
         public int Stock { get; set; }
         public String CategoryName { get; set; }
+        public int? Weight { get; set; }
+        public int? Height { get; set; }
     }
 }

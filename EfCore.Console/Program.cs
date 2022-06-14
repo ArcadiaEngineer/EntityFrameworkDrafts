@@ -2,6 +2,7 @@
 
 
 using EfCore.Console.Dal;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 using (var context = new AppDbContext())
@@ -23,9 +24,7 @@ using (var context = new AppDbContext())
     //OuterJoin(context);
 
     //RawSql(context);
-
     //await CustomSqlQueries(context);
-
     //await ToSqlQuery(context);
 
     //await Pagination(context, 1, 2);
@@ -33,6 +32,11 @@ using (var context = new AppDbContext())
     //IgnoreGlobalQueryFilter(context);
 
     //QueriesWithTagWith(context);
+
+    //StoreProcedureBasick(context);
+    //StoreProcedureWithParameters(context);
+
+    //CustomStoreProcedureResult(context);
 
     Console.WriteLine("Hello World");
 
@@ -188,4 +192,33 @@ static void IgnoreGlobalQueryFilter(AppDbContext context)
 static void QueriesWithTagWith(AppDbContext context)
 {
     var products = context.Products.TagWith("GetAll Products").Where(p => p.Name == "asd").ToArray();
+}
+
+static void StoreProcedureBasic(AppDbContext context)
+{
+    var productsWithProcedure = context.Products.FromSqlRaw("EXEC sp_read_products").ToList();
+}
+
+static void StoreProcedureWithParameters(AppDbContext context)
+{
+    var categoryId = 1;
+    var price = 70;
+    var FullProducts = context.FullProducts.FromSqlInterpolated($"Exec sp_read_all_products_with_join {categoryId},{price}").ToList();
+}
+
+static void CustomStoreProcedureResult(AppDbContext context)
+{
+    var sqlParamater = new SqlParameter("@newId", System.Data.SqlDbType.Int);
+    sqlParamater.Direction = System.Data.ParameterDirection.Output;
+    var product = new Product
+    {
+        Name = "Kalem6",
+        Stock = 12,
+        Price = 7,
+        DiscountPrice = 6,
+        CategoryId = 1,
+        Barcode = 34565,
+        IsDeleted = false
+    };
+    context.Database.ExecuteSqlInterpolated($"Exec sp_insert_product {product.Name},{product.Price},{product.DiscountPrice},{product.Stock},{product.Barcode},{product.CategoryId},{product.IsDeleted},{sqlParamater}  output");
 }
