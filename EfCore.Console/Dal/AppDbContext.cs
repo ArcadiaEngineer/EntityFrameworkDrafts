@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EfCore.Console.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using C = System.Console;
 
 namespace EfCore.Console.Dal
 {
@@ -10,6 +10,8 @@ namespace EfCore.Console.Dal
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductFeature> ProductFeatures { get; set; }
+
+        public DbSet<ProductEssentials> ProductEssentials { get; set; }
 
         public DbSet<FullProduct> FullProducts { get; set; }
         #region Keyless joined object
@@ -44,6 +46,7 @@ namespace EfCore.Console.Dal
             var path = Initiliazer.Configuration.GetConnectionString("SqlServer");
             optionsBuilder.UseSqlServer(path);
             //optionsBuilder.LogTo(C.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
+            //optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); Global No Tracking
 
             #region LazyLoading
             /*optionsBuilder.UseLazyLoadingProxies(); Microsoft.EntityFramework.Proxies libraries
@@ -84,12 +87,29 @@ namespace EfCore.Console.Dal
 
             #region Indexing
             modelBuilder.Entity<Product>().HasIndex(p => p.Price);//Only One
-            modelBuilder.Entity<Product>().HasIndex(p => new { p.Price , p.Name});//Composite
+            modelBuilder.Entity<Product>().HasIndex(p => new { p.Price, p.Name });//Composite
             modelBuilder.Entity<Product>().HasIndex(p => p.Price).IncludeProperties(p => p.DiscountPrice);//Multiple Column
             #endregion
 
             #region Constraint
             modelBuilder.Entity<Product>().HasCheckConstraint("PriceCheckDefault", "[Price] > [Price] - [Price] * [DiscountPrice] / 100");
+            #endregion
+
+            #region CustomSqlQueries
+            modelBuilder.Entity<ProductEssentials>().HasNoKey();
+            #endregion
+
+            #region ToSqlQuery
+            modelBuilder.Entity<ProductEssentials>().ToSqlQuery("Select Id, Name, Price, DiscountPrice from Products");
+            #endregion
+
+            #region ToView
+            modelBuilder.Entity<ProductEssentials>().ToView("ViewName");
+            #endregion
+
+            #region GlobalFilters
+            modelBuilder.Entity<Product>().HasQueryFilter(p => p.IsDeleted == false);
+            //it is added all product queries
             #endregion
 
             base.OnModelCreating(modelBuilder);
@@ -99,4 +119,5 @@ namespace EfCore.Console.Dal
 /*
  * EfCore doesnt track entities which has no key
  * EfCore doesnt track entities which has no key but we can read them
+ * When we create db set but we use it for join results or custom queries, we need to delete their tables in migration
  */

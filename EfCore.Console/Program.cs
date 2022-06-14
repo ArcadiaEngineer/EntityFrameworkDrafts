@@ -3,7 +3,6 @@
 
 using EfCore.Console.Dal;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 using (var context = new AppDbContext())
 {
@@ -21,8 +20,19 @@ using (var context = new AppDbContext())
     //InnerJoinWithLINQ(context);
 
     //LeftRightJoins(context);
-
     //OuterJoin(context);
+
+    //RawSql(context);
+
+    //await CustomSqlQueries(context);
+
+    //await ToSqlQuery(context);
+
+    //await Pagination(context, 1, 2);
+
+    //IgnoreGlobalQueryFilter(context);
+
+    //QueriesWithTagWith(context);
 
     Console.WriteLine("Hello World");
 
@@ -147,4 +157,35 @@ static void OuterJoin(AppDbContext context)
                 };
 
     var outer = left.Union(right).ToList();
+}
+
+static async void  RawSql(AppDbContext context)
+{
+    var products = context.Products.FromSqlRaw("Select * From Products where id = {0}", 1).ToListAsync();
+    var product = await context.Products.FromSqlInterpolated($"Select * From Products where id = {0}").ToListAsync();
+}
+
+static async Task CustomSqlQueries(AppDbContext context)
+{
+    var productEssentials = await context.ProductEssentials.FromSqlRaw("Select Id, Name, Price, DiscountPrice from Products").ToListAsync();
+}
+
+static async Task ToSqlQuery(AppDbContext context)
+{
+    var productEssemtials = await context.ProductEssentials.ToListAsync();
+}
+
+static async Task Pagination(AppDbContext context, int page, int size)
+{
+    var result = context.Products.Where(p => p.Price < 100).OrderByDescending(p => p.Id).Skip((page - 1) * size ).Take(size).ToList();
+}
+
+static void IgnoreGlobalQueryFilter(AppDbContext context)
+{
+    var products = context.Products.Where(p => p.Price < 100).IgnoreQueryFilters();
+}
+
+static void QueriesWithTagWith(AppDbContext context)
+{
+    var products = context.Products.TagWith("GetAll Products").Where(p => p.Name == "asd").ToArray();
 }
