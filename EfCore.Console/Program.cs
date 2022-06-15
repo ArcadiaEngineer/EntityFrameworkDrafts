@@ -1,7 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
+using AutoMapper.QueryableExtensions;
 using EfCore.Console.Dal;
+using EfCore.Console.Dtos;
+using EfCore.Console.Mapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -41,12 +44,27 @@ using (var context = new AppDbContext())
     //FunctionWithCsFunctionInDbContext(context);
     //RawSqlForFunctionReturnsScalarValue(context);
 
+    //ProjectionEntity(context);
+    //await ProjectionAnonymus(context);
+    //ProjectionDto(context);
+    //ProjectionWithProjectToMethodBestPractise(context);
+
     Console.WriteLine("Hello World");
 
 }
 
 
 Console.WriteLine("Hello, World!");
+
+
+/*
+ * When we use Select, we dont need to Include or ThenInclude methods anymore. EfCore creates queries with automatically
+ * and includes corresponding tables in joins
+ */
+
+
+
+
 
 static void AddEntity(AppDbContext context)
 {
@@ -241,4 +259,37 @@ static void RawSqlForFunctionReturnsScalarValue(AppDbContext context)
 {
     int categoryId = 5;
     var productCount = context.ProductCount.FromSqlInterpolated($"SELECT dbo.getProductCount({categoryId}) as Count").ToList();
+}
+
+static void ProjectionEntity(AppDbContext context)
+{
+    var products = context.Products.ToList();
+}
+
+static async Task ProjectionAnonymus(AppDbContext context)
+{
+    var list = await context.Categories.Include(c => c.Products).ThenInclude(p => p.ProductFeature).Select(c => new
+    {
+        ProductNames = string.Join(",", c.Products.Select(p => p.Name)),
+        CategoryName = c.Name,
+        ProductCount = c.Products.Count(),
+        ProductsPrice = c.Products.Sum(p => p.Price)
+    }).Where(a => a.ProductCount > 3).OrderBy(a => a.ProductsPrice).ToListAsync();
+}
+
+static void ProjectionDto(AppDbContext context)
+{
+    var productDtos = context.Products.Select(p => new ProductDto
+    {
+        Price = p.Price,
+        DiscountPrice = p.DiscountPrice,
+        Stock = p.Stock,
+        Id = p.Id,
+        Name = p.Name
+    }).Where(pdto => pdto.Price < 50).ToList();
+}
+
+static void ProjectionWithProjectToMethodBestPractise(AppDbContext context)
+{
+    var productDtoWithProjectionTo = context.Products.ProjectTo<ProductDto>(ObjectMapper.Lazy.ConfigurationProvider).Where(pdto => pdto.Price > 500).ToList();
 }
