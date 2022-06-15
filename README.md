@@ -127,12 +127,25 @@ __Ex:__
     });
 ```
 
+For configuration of tables there are two ways as we mentioned above. (__attributes__ and __fluent api__)
+
+You can choose one of them to use. They are equivalent statemenets with different ways.
+__Ex:__
+
+| Data Annotations Attributes | Fluent API |
+| ------ | ------ |
+| [Table] | ToTable() |
+| [Column] | HasColumnName() |
+| [Required] | IsRequired() |
+| [MaxLength] | HasMaxLength() |
+| [ - - - ] | - - - ( ) |
+| [StringLength()] | HasMaxLength() |
 
 
+## 4- Relationships
 
 
-
-
+<h5> Will be added Soon </h5>
 
 
     
