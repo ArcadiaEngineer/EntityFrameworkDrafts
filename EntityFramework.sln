@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EfCore.Console", "EfCore.Console\EfCore.Console.csproj", "{5F1D3CC9-A057-4C66-B837-956967CF2F83}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfCore.Console", "EfCore.Console\EfCore.Console.csproj", "{5F1D3CC9-A057-4C66-B837-956967CF2F83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConcurrencyHandling", "ConcurrencyHandling\ConcurrencyHandling.csproj", "{ABBBDB7B-7312-4A18-8E8F-22F2DA217408}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{5F1D3CC9-A057-4C66-B837-956967CF2F83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F1D3CC9-A057-4C66-B837-956967CF2F83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F1D3CC9-A057-4C66-B837-956967CF2F83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ABBBDB7B-7312-4A18-8E8F-22F2DA217408}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ABBBDB7B-7312-4A18-8E8F-22F2DA217408}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ABBBDB7B-7312-4A18-8E8F-22F2DA217408}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ABBBDB7B-7312-4A18-8E8F-22F2DA217408}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
