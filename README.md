@@ -48,7 +48,6 @@ If you work with a WebAPI or WebMVC project you can reach your ___connection str
 ```
 <br/>
 <br/>
-<br/>
 
 ## 1- Database First
 
@@ -63,7 +62,6 @@ you can scaffold your database in  __Code Side__
         Scaffold-DbContext <Your Connection String> <Your Database Provider>(ex: Microsoft.EntityFrameworkCore.SqlServer) -OutputDir <Your Direction>
         ```
 
-<br/>
 <br/>
  
 ## 2- Code First  
@@ -86,7 +84,6 @@ Migration commands:
 - __SCRIPT-MIGRATION__
     - It gives the migrations file as sql script
 
-<br/>
 <br/>
  
 ## 3- DbContext
@@ -155,7 +152,6 @@ __Ex:__
 | [StringLength()] | HasMaxLength() |
 
 
-<br/>
 <br/>
  
 ## 4- Relationships
