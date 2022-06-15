@@ -1,26 +1,27 @@
 ﻿using EfCore.Console.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Data.Common;
 
 namespace EfCore.Console.Dal
 {
     public class AppDbContext : DbContext
     {
 
+        public DbConnection DbConnection { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<ProductFeature> ProductFeatures { get; set; }
-
         public DbSet<ProductEssentials> ProductEssentials { get; set; }
-
+        
         public DbSet<FullProduct> FullProducts { get; set; }
         #region Keyless joined object
         /*
          * When we have a inner joined objects which are obtained from database, EfCore map them to the our DbSet
          */
         #endregion
-
         //public DbSet<Person> People { get; set; }
+       
         #region Inheretince
         /*
          Person class is the super class of Student and Teacher
@@ -30,7 +31,6 @@ namespace EfCore.Console.Dal
          EfCore creates one table and add Deliminater Column to the table to distinguish them
          */
         #endregion
-
         public DbSet<Student> Students { get; set; }
         public DbSet<Teacher> Teachers { get; set; }
         #region Many-To-Many Releationship
@@ -43,10 +43,29 @@ namespace EfCore.Console.Dal
 
         public DbSet<ProductCount> ProductCount { get; set; }
 
+        public AppDbContext(DbConnection dbConnection)
+        {
+            DbConnection = dbConnection;
+        }
+        public AppDbContext()
+        {
+
+        }
+
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            var path = Initiliazer.Configuration.GetConnectionString("SqlServer");
-            optionsBuilder.UseSqlServer(path);
+            if(DbConnection == default(DbConnection))
+            {
+                var path = Initiliazer.Configuration.GetConnectionString("SqlServer");
+                optionsBuilder.UseSqlServer(path);
+            }
+            else
+            {
+                optionsBuilder.UseSqlServer(DbConnection);
+            }
+
+
             //optionsBuilder.LogTo(C.WriteLine, Microsoft.Extensions.Logging.LogLevel.Information);
             //optionsBuilder.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking); Global No Tracking
 
@@ -127,7 +146,7 @@ namespace EfCore.Console.Dal
             #endregion
 
             #region FunctionReturnsScalerValueWithMethod
-            modelBuilder.HasDbFunction(typeof(AppContext).GetMethod(nameof(GetProductCount), new[] { typeof(int) })!).HasName("getProductCount");
+            modelBuilder.HasDbFunction(typeof(AppDbContext).GetMethod(nameof(GetProductCount), new[] { typeof(int) })!).HasName("getProductCount");
             #endregion
 
             #region ExplicitlyCallFunctionsReturnsScalarValue

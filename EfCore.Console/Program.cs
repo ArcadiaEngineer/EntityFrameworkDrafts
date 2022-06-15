@@ -2,11 +2,14 @@
 
 
 using AutoMapper.QueryableExtensions;
+using EfCore.Console;
 using EfCore.Console.Dal;
 using EfCore.Console.Dtos;
 using EfCore.Console.Mapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.Extensions.Configuration;
 
 using (var context = new AppDbContext())
 {
@@ -48,6 +51,9 @@ using (var context = new AppDbContext())
     //await ProjectionAnonymus(context);
     //ProjectionDto(context);
     //ProjectionWithProjectToMethodBestPractise(context);
+
+    //TransactionManagement(context);
+    //MultipleDbContextTransaction(context);
 
     Console.WriteLine("Hello World");
 
@@ -292,4 +298,59 @@ static void ProjectionDto(AppDbContext context)
 static void ProjectionWithProjectToMethodBestPractise(AppDbContext context)
 {
     var productDtoWithProjectionTo = context.Products.ProjectTo<ProductDto>(ObjectMapper.Lazy.ConfigurationProvider).Where(pdto => pdto.Price > 500).ToList();
+}
+
+static void TransactionManagement(AppDbContext context)
+{
+    using (var transaction = context.Database.BeginTransaction())
+    {
+        var category = new Category
+        {
+            Name = "Kitaplar"
+        };
+
+        context.Categories.Add(category);
+        context.SaveChanges();
+
+        var product = new Product
+        {
+            Name = "Kitap1",
+            Stock = 2,
+            Price = 10,
+            DiscountPrice = 5,
+            Barcode = 1234,
+            IsDeleted = false,
+            CategoryId = category.Id,
+        };
+        context.Products.Add(product);
+        context.SaveChanges();
+        transaction.Commit();
+    }
+}
+
+static void MultipleDbContextTransaction(AppDbContext context)
+{
+    using (var transaction = context.Database.BeginTransaction())
+    {
+        var path = Initiliazer.Configuration.GetConnectionString("SqlServer");
+        var connection = new SqlConnection(path);
+
+        /*
+         * Business Codes / Logic
+         */
+
+        context.SaveChanges();
+        using (var context2 = new AppDbContext(connection))
+        {
+
+            context2.Database.UseTransaction(transaction.GetDbTransaction());
+
+            /*
+             * Business Codes / Logic
+             */
+            context2.SaveChanges();
+        }
+
+        transaction.Commit();
+    }
 }
