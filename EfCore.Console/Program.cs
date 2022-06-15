@@ -55,6 +55,9 @@ using (var context = new AppDbContext())
     //TransactionManagement(context);
     //MultipleDbContextTransaction(context);
 
+
+    //IsoloationLevel(context);
+
     Console.WriteLine("Hello World");
 
 }
@@ -352,5 +355,42 @@ static void MultipleDbContextTransaction(AppDbContext context)
         }
 
         transaction.Commit();
+    }
+}
+
+static void IsoloationLevel(AppDbContext context)
+{
+    using (var transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.ReadUncommitted))
+    {
+        /*
+         * Transaction Levels can be given as a paramater
+         * 
+         * ReadUncommitted Level : There is no lock for table and rows 
+         * - Transaction can read uncommitted raws
+         * - While one transaction is reading data, another one can insert,update,delete
+         * - Phantom and nonrepeatable problems
+         * 
+         * Reads commited data mentioned below
+         * 
+         * ReadCommitted Level: There is no lock for table and rows 
+         * - Transaction can read commited raws
+         * - While one transaction is reading data, another one can insert,update,delete
+         * - Phantom and nonrepeatable problems
+         * 
+         * Repeatable Level: There is lock for range of transaction scope
+         * - While one transaction is reading data, another one can not update and delete data, but can insert data
+         * - Phantom problem
+         * 
+         * Serializable: There is lock for range of transaction scope
+         * - While one transaction is reading data, another one can not update, delete and insert data
+         * 
+         * Snapshot: There is no lock for another transaction
+         * - While one transaction is reading data, another one can update, delete and insert data
+         * - Transaction provides consistent data during transaction scope, but other transaction can do operations at the same time
+         * Sql Command : 
+         * - alter database DATABASE_NAME
+         * - set ALLOW_SNAPSHOT_ISOLATION on
+         * 
+         */
     }
 }
