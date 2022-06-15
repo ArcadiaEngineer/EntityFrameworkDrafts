@@ -47,6 +47,8 @@ If you work with a WebAPI or WebMVC project you can reach your ___connection str
    builder.Configuration.GetConnectionString("<Your Tag Name>")
 ```
 <br/>
+<br/>
+<br/>
 
 ## 1- Database First
 
@@ -60,7 +62,9 @@ you can scaffold your database in  __Code Side__
         ```sh
         Scaffold-DbContext <Your Connection String> <Your Database Provider>(ex: Microsoft.EntityFrameworkCore.SqlServer) -OutputDir <Your Direction>
         ```
-    
+
+<br/>
+<br/>
 ## 2- Code First  
 
 You can create your database with code first way. By using __attributes__ and __fluent api__ you can configure your database design.
@@ -80,7 +84,8 @@ Migration commands:
 - __SCRIPT-MIGRATION__
     - It gives the migrations file as sql script
 
-
+<br/>
+<br/>
 ## 3- DbContext
 
 __DbContext Methods__: When you use __DbContext__ methods which are: 
@@ -142,6 +147,8 @@ __Ex:__
 | [StringLength()] | HasMaxLength() |
 
 
+<br/>
+<br/>
 ## 4- Relationships
 
 
