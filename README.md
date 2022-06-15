@@ -63,34 +63,69 @@ you can scaffold your database in  __Code Side__
     
 ## 2- Code First  
 
-You can create your database with code first way. By using __attributes__ and __fluent api__ you can configure your database design
+You can create your database with code first way. By using __attributes__ and __fluent api__ you can configure your database design.
 
 - Create your entity classes
 - Configure database with __attributes__ or __fluent api__
 - Create the database with the settigs by using ___migrations___
 
 <br/>
-  
 Migration commands: 
-- ADD-MIGRATION <Migration Name>
+- __ADD-MIGRATION _<Migration Name>___
     - Creates a migration file which involves Database settings regarding to the your configuration
-- UPDATE-DATABASE
+- __UPDATE-DATABASE__
     - Reflects the migration to the Database
-- REMOVE-MIGRATION
+- __REMOVE-MIGRATION__
     - Removes the last migration
-- SCRIPT-MIGRATION
-    - It give the migrations file as sql script
+- __SCRIPT-MIGRATION__
+    - It gives the migrations file as sql script
 
 
 ## 3- DbContext
 
+__DbContext Methods__: When you use __DbContext__ methods which are: 
 
+- Add
+- Update
+- Remove
+- Find
 
+__EntityFramework__ marks the entities with a tag regarding to the method and tracks them in the memory:
 
+- __Added__
+    - When an entity will be added, it is marked with _added_ tag
+- __Deleted__
+    - When an entity will be removed, it is marked with _deleted_ tag
+- __Modified__
+    - When an entity will be updated, it is marked with _modified_ tag
+- __Unchanged__
+    - When an entity will be listed without __AsNoTracking__ Method, it is marked with __unchanged__ tag
+- __Detached__
+    - When there is an entity but it has no relation with EfCore, it is marked with __detached__ tag
 
+Whenever you call __DbContext.SaveChanges()__ or __DbContext.SaveChangesAsync()__ methods then
+__EntityFramework__ reflects them to the database.
 
+There is a method which is provided by EfCore to see __Tracked Entities__ and called __ChangeTracker__.. You can reach the entities and their states.
 
+__Ex:__
+```sh
+        context.ChangeTracker.Entries().ToList().ForEach(entry =>
+    {
+        switch (entry.Entity)
+        {
+            case Teacher teacher:
+                Console.WriteLine(teacher.Name + " " + teacher.Phone + " " + teacher.Age);
+                break;
 
+            case Student student:
+                Console.WriteLine(student.Name + " " + student.StudentNumber + " " + student.Age);
+                break;
+            default:
+                break;
+        }
+    });
+```
 
 
 
