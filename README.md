@@ -65,6 +65,7 @@ you can scaffold your database in  __Code Side__
 
 <br/>
 <br/>
+ 
 ## 2- Code First  
 
 You can create your database with code first way. By using __attributes__ and __fluent api__ you can configure your database design.
@@ -74,6 +75,7 @@ You can create your database with code first way. By using __attributes__ and __
 - Create the database with the settigs by using ___migrations___
 
 <br/>
+ 
 Migration commands: 
 - __ADD-MIGRATION _<Migration Name>___
     - Creates a migration file which involves Database settings regarding to the your configuration
@@ -86,6 +88,7 @@ Migration commands:
 
 <br/>
 <br/>
+ 
 ## 3- DbContext
 
 __DbContext Methods__: When you use __DbContext__ methods which are: 
@@ -113,6 +116,8 @@ __EntityFramework__ reflects them to the database.
 
 There is a method which is provided by EfCore to see __Tracked Entities__ and called __ChangeTracker__.. You can reach the entities and their states.
 
+<br/>
+ 
 __Ex:__
 ```sh
         context.ChangeTracker.Entries().ToList().ForEach(entry =>
@@ -135,6 +140,9 @@ __Ex:__
 For configuration of tables there are two ways as we mentioned above. (__attributes__ and __fluent api__)
 
 You can choose one of them to use. They are equivalent statemenets with different ways.
+
+<br/>
+ 
 __Ex:__
 
 | Data Annotations Attributes | Fluent API |
@@ -149,6 +157,7 @@ __Ex:__
 
 <br/>
 <br/>
+ 
 ## 4- Relationships
 
 
