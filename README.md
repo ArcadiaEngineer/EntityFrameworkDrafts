@@ -47,7 +47,6 @@ If you work with a WebAPI or WebMVC project you can reach your ___connection str
    builder.Configuration.GetConnectionString("<Your Tag Name>")
 ```
 <br/>
-<br/>
 
 ## 1- Database First
 
@@ -61,9 +60,7 @@ you can scaffold your database in  __Code Side__
         ```sh
         Scaffold-DbContext <Your Connection String> <Your Database Provider>(ex: Microsoft.EntityFrameworkCore.SqlServer) -OutputDir <Your Direction>
         ```
-
-<br/>
- 
+    
 ## 2- Code First  
 
 You can create your database with code first way. By using __attributes__ and __fluent api__ you can configure your database design.
@@ -73,7 +70,6 @@ You can create your database with code first way. By using __attributes__ and __
 - Create the database with the settigs by using ___migrations___
 
 <br/>
- 
 Migration commands: 
 - __ADD-MIGRATION _<Migration Name>___
     - Creates a migration file which involves Database settings regarding to the your configuration
@@ -84,8 +80,7 @@ Migration commands:
 - __SCRIPT-MIGRATION__
     - It gives the migrations file as sql script
 
-<br/>
- 
+
 ## 3- DbContext
 
 __DbContext Methods__: When you use __DbContext__ methods which are: 
@@ -113,8 +108,6 @@ __EntityFramework__ reflects them to the database.
 
 There is a method which is provided by EfCore to see __Tracked Entities__ and called __ChangeTracker__.. You can reach the entities and their states.
 
-<br/>
- 
 __Ex:__
 ```sh
         context.ChangeTracker.Entries().ToList().ForEach(entry =>
@@ -137,9 +130,6 @@ __Ex:__
 For configuration of tables there are two ways as we mentioned above. (__attributes__ and __fluent api__)
 
 You can choose one of them to use. They are equivalent statemenets with different ways.
-
-<br/>
- 
 __Ex:__
 
 | Data Annotations Attributes | Fluent API |
@@ -151,14 +141,205 @@ __Ex:__
 | [ - - - ] | - - - ( ) |
 | [StringLength()] | HasMaxLength() |
 
-
-<br/>
- 
 ## 4- Relationships
 
+** If you follow EntityFramework naming convensions you don't need additional confiuration to set relationships but if you dont, you should specify your relationships by using __Data Annotations Attributes__ or __Fluent API__
 
-<h1> Will be added Soon </h1>
+ __One To Many__ : 
+    - Principal entitiy: Parent entity of child entity.
+    - Dependent entity: Child entity which has a foreign key of principal entity.
 
+Navigation property ex:
 
+__Principal__
+```sh
+  public class Category
+    {
+        public int Id { get; set; }
+        public String Name { get; set; }
+        public virtual List<Product> Products { get; set; }
+    }
+```
+__Dependent__
+```sh
+  public class Product
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int CategoryId { get; set; }
+        public virtual Category Category { get; set; }
+    }
+```
+
+ __One To One__ : 
+
+You can set ProductFeature class's id as a both primariy key and foreign key or create additional property ProductId to keep Id of Product
+
+Navigation property ex:
+
+__Dependent__
+```sh
+  public class ProductFeature
+    {
+        public int Id { get; set; }
+        public int Width { get; set; }
+        public int Height { get; set; }
+        public string Color { get; set; }
+        public virtual Product Product { get; set; }
+    }
+```
+__Principal__
+```sh
+  public class Product
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
+        public int CategoryId { get; set; }
+        public virtual Category Category { get; set; }
+    }
+```
     
-    
+__Many To Many__ : 
+
+When you create many to many relationship, there is need for an extra table. Ef core creates this table when you set many to many relationship. Also you can manipulate this table's name or column names.
+
+Navigation property ex:
+
+```sh
+  public class Student
+    {
+        public int Id { get; set; }
+        public string StudentNumber { get; set; }
+        public List<Teacher> Teachers { get; set; }
+    }
+```
+```sh
+  public class Teacher
+    {
+        public int Id { get; set; }
+        public string Phone { get; set; }
+        public List<Student> Students { get; set; }
+    }
+```
+And Ef Core creates a table like:
+|  StudentsId  | TeachersId  |
+| ------ | ------ |
+| id | id |
+| id | id |
+| - - | - - |
+
+__Data Add__ :
+
+You can add data to tables by using navigation properties of entities:
+
+__Ex:__
+```sh
+context.Categories.Add(new Category
+    {
+        Name = "Books",
+        Products = new List<Product>
+        {
+            new Product
+            {
+                Name = "Book1",
+                Stock = 10,
+                Price = 15,
+                ProductFeature = new ProductFeature
+                {
+                    Color = "Red",
+                    Height = 5,
+                    Width = 5
+                }
+            },
+            new Product
+            {
+                Name = "Book2",
+                Stock = 20,
+                Price = 10,
+                ProductFeature = new ProductFeature
+                {
+                    Color = "Blue",
+                    Height = 7,
+                    Width = 7
+                }
+            }
+        }
+    });
+```
+
+You can put a constarint to prevent data adding to the parent entities from the child entities.
+In order to achive this remove navigation properties from the child one.
+
+__Delete Behaviors__ :
+
+- _Cascade_:
+    -When you delete the parent entity, it deletes entities which holds the parent id as a foreign key
+- _Restrict_:
+    -When you attempt to delete the parent entity, if there is a related entitiy with it, it does not allow to delete the parent
+- _Set Null_:
+    -When you delete the parent entity, if there is a related entitiy with it and foreign key field of related entitiy is nullable, Ef Core sets its foreign key null
+- _No Action_:
+    -Ef Core does not interfere and leaves the responsibility to the database
+
+
+## 5- Related Data Load
+
+- __Eager Loading__: 
+    -You can retrieve all data at once by using navigation properties and __Include__ methods
+    Ex:
+    ```sh
+    var result = context.Products.Include(p => p.ProductFeature).ThenInclude(pf => pf.Product).Include(p => p.Category).FirstOrDefault();
+    ```
+- __Explicit Loading__: 
+    -You can retrieve data by using navigation properties and __Collection__ or __Referance__ methods according to the their relationships and __Load__ Method
+    Ex:
+    ```sh
+    var result = context.Categories.FirstOrDefault();
+    context.Entry(result!).Collection(c => c.Products).Load();
+    ```
+- __Lazy Loading__: 
+    -You can retrieve data by using navigation properties. There is no method for lazy loading.
+     When you use Navigation properties Ef Core loads data at that time by fetching from database each time you use Navigation properties.
+
+    To enable this feature:
+    * First you need to install __Microsoft.EntityFrameworkCore.Proxies__ library
+    * And you need to mark your navigation properties with __virtual__ keyword
+   
+    ```sh
+        optionsBuilder.UseLazyLoadingProxies();
+    ```
+
+## 6- Inheritance
+
+__Table Per Hierarchy__ :
+
+- If you have a base class and its child classes and you dont add base class as a __DbSet__, your tables are created with base class properties. It is default behavior of Entity Framework for TBT.
+- If you have a base class and its child classes and you add base class as a __DbSet__, there will be only one table and it holds all childrens properties as a column but they will be nullable. To be able to discriminate them, the table holds a column called deliminator. It is default behavior of Entity Framework for TBT.
+
+__Table Per Type__ :
+
+If you have a base class and its child classes and you add base class and its children as a __DbSet__, there will be tables for each classes and base class contains mutual columns , childrens contains their spesific columns.
+
+![ss](https://user-images.githubusercontent.com/89700270/174060519-30dbe722-f21d-4078-8728-2868093c2dcf.PNG)
+
+
+## Remained Topics
+
+__//You can reach each of them from :__
+<h4> __[Program.cs](https://github.com/ArcadiaEngineer/EntityFrameworkStudies/blob/master/EfCore.Console/Program.cs)__ </h4>
+<h4> __[AppDbContext.cs](https://github.com/ArcadiaEngineer/EntityFrameworkStudies/blob/master/EfCore.Console/Dal/AppDbContext.cs)__</h4>
+
+__For methods you can look at _Program.cs_ for their configuration _AppDbContext___
+
+## For Concurrency Handling see
+<h4> __[Concurrency Handling](https://github.com/ArcadiaEngineer/EntityFrameworkStudies/tree/master/ConcurrencyHandling)__</h4>
+
+
+
+
+
+Bu kaynağı https://www.udemy.com/course/entity-framework-core-sifirdan-zirveye/ kursundan yararlanarak hazırlamaya çalıştım. Daha fazlasını Türkçe olarak orada bulabilirsiniz.
+
+
