@@ -328,13 +328,13 @@ If you have a base class and its child classes and you add base class and its ch
 ## Remained Topics
 
 __//You can reach each of them from :__
-<h4> [Program.cs](https://github.com/ArcadiaEngineer/EntityFrameworkStudies/blob/master/EfCore.Console/Program.cs) </h4>
-<h4> [AppDbContext.cs](https://github.com/ArcadiaEngineer/EntityFrameworkStudies/blob/master/EfCore.Console/Dal/AppDbContext.cs) </h4>
+[Program.cs](https://github.com/ArcadiaEngineer/EntityFrameworkStudies/blob/master/EfCore.Console/Program.cs)
+[AppDbContext.cs](https://github.com/ArcadiaEngineer/EntityFrameworkStudies/blob/master/EfCore.Console/Dal/AppDbContext.cs)
 
 __For methods you can look at _Program.cs_ for their configuration _AppDbContext___
 
 ## For Concurrency Handling see
-<h4> [Concurrency Handling](https://github.com/ArcadiaEngineer/EntityFrameworkStudies/tree/master/ConcurrencyHandling) </h4>
+[Concurrency Handling](https://github.com/ArcadiaEngineer/EntityFrameworkStudies/tree/master/ConcurrencyHandling)
 
 
 
