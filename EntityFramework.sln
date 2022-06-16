@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32526.322
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EfCore.Console", "EfCore.Console\EfCore.Console.csproj", "{5F1D3CC9-A057-4C66-B837-956967CF2F83}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConcurrencyHandling", "ConcurrencyHandling\ConcurrencyHandling.csproj", "{ABBBDB7B-7312-4A18-8E8F-22F2DA217408}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConcurrencyHandling", "ConcurrencyHandling\ConcurrencyHandling.csproj", "{ABBBDB7B-7312-4A18-8E8F-22F2DA217408}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
